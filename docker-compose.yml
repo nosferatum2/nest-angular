@@ -1,0 +1,58 @@
+version: "3.8"
+
+services:
+  api:
+    build:
+      dockerfile: Dockerfile
+      context: ./api
+      target: development
+    # Mount host directory to the container
+    # Mount api directory (./api) to (:) the container(/src/app)
+    # Reflect File Changes from host to container
+    volumes:
+      - ./api:/src/app
+      - /src/app/node_modules
+    command: npm run start:dev
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgres://user:password@postgres:5432/db
+      NODE_ENV: development
+      PORT: 4200
+    ports:
+      - "4200:4200"
+      - "9229:9229"
+
+  ui:
+    build:
+      dockerfile: Dockerfile
+      context: ./ui
+      target: development
+    volumes:
+      - ./ui:/ui/src/app
+      - /src/app/node_modules
+    command: npm run start
+    ports:
+      - "3000:3000"
+    links:
+      - api
+
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db
+    ports:
+      - "5432:5432"
+      - "5433:5433"
+
+  postgres-admin:
+    image: dpage/pgadmin4
+    depends_on:
+      - postgres
+    environment:
+      PGADMIN_DEFAULT_EMAIL: 5wqFP@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "5050:80"
