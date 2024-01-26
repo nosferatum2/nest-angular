@@ -48,7 +48,7 @@ services:
       - "5433:5433"
 
   postgres-admin:
-    image: dpage/pgadmin4
+    image: dpage/pgadmin4:8.2
     depends_on:
       - postgres
     environment:
