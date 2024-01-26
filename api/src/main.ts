@@ -6,4 +6,5 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   await app.listen(4200);
 }
+
 bootstrap();
