@@ -5,6 +5,4 @@ export abstract class IDataServices {
   abstract users: IGenericRepository<IUser>;
 
   abstract bookmarks: IGenericRepository<IBookmark>;
-
-  // abstract genres: IGenericRepository<Genre>;
 }

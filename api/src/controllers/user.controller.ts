@@ -21,19 +21,16 @@ export class UserController {
     private userUseCases: UsersUseCases
   ) {}
 
-  // works
   @Get()
   async findAll() {
     return this.userUseCases.getAllUsers();
   }
 
-  // works
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return this.userUseCases.getUserById(id);
   }
 
-  // works
   @Post()
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async create(@Body() createUserDto: CreateUserDto) {

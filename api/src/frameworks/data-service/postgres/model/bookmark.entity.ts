@@ -14,15 +14,6 @@ export class BookmarkEntity extends AbstractEntity<BookmarkEntity> {
   @Column()
   link: string;
 
-  // @ManyToOne(
-  //   () => UserEntity,
-  //   user => user.bookmarks,
-  //   {
-  //     onDelete: 'CASCADE'
-  //   }
-  // )
-  // user: UserEntity;
-
   @ManyToMany(() => UserEntity, user => user.bookmarks)
   users: UserEntity[];
 

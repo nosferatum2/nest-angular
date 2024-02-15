@@ -8,4 +8,5 @@ export class LoginUserDto {
 
   @IsNotEmpty({ message: 'Password is required' })
   password: string;
+
 }

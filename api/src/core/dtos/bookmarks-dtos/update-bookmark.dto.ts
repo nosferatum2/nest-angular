@@ -16,4 +16,5 @@ export class UpdateBookmarkDto {
 
   @IsOptional()
   users: IUser[]
+
 }

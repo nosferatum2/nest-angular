@@ -33,23 +33,6 @@ export class UserEntity extends AbstractEntity<UserEntity> {
   // })
   // roles: UserRole[]
 
-  // @Exclude()
-  // @Column(
-  //   'text',
-  //   {
-  //     unique: true,
-  //     nullable: true
-  //   }
-  // )
-  // hash: string | null;
-
-  // @OneToMany(
-  //   () => BookmarkEntity,
-  //   bookmark => bookmark.user,
-  //   { cascade: true }
-  // )
-  // bookmarks: BookmarkEntity[]
-
   @ManyToMany(() => BookmarkEntity, bookmark => bookmark.users)
   bookmarks: BookmarkEntity[];
 }
