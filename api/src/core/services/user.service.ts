@@ -10,7 +10,7 @@ const PASSWORD_SALT = 10;
 @Injectable()
 export class UserService {
   constructor(
-    @Inject('userRepository') private readonly repository: UserRepository
+    @Inject(userRepository) private readonly repository: UserRepository
   ) { }
 
   public async findAll(): Promise<IUser[]> {

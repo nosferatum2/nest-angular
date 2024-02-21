@@ -9,11 +9,11 @@ import { BookmarkService } from './bookmark.service';
   ],
   providers: [
     UserService,
-    BookmarkService,
+    BookmarkService
   ],
   exports: [
-    // UserService,
-    // BookmarkService,
+    UserService,
+    BookmarkService,
   ],
 })
 export class ServiceModule {}

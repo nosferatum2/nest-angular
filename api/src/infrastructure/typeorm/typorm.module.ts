@@ -22,7 +22,7 @@ import { bookmarkRepository } from 'src/core/repository/bookmark.repository';
   ],
   providers: [
     {
-      provide: 'userRepository', // unique for each instance with Symbol() or use string value
+      provide: userRepository, // unique for each instance with Symbol() or use string value
       useClass: TypeormUserRepository
     },
     {
@@ -31,8 +31,8 @@ import { bookmarkRepository } from 'src/core/repository/bookmark.repository';
     }
   ],
   exports: [
-    TypeormUserRepository,
-    TypeormBookmarkRepository
+    bookmarkRepository,
+    userRepository
   ]
 })
 export class TypeormModule {}

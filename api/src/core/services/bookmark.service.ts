@@ -1,13 +1,13 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { IBookmark } from '../model';
 import { CreateBookmarkDto, UpdateBookmarkDto } from '../dto';
-import { BookmarkRepository } from 'src/core/repository/bookmark.repository';
+import { bookmarkRepository, BookmarkRepository } from 'src/core/repository/bookmark.repository';
 
 @Injectable()
 export class BookmarkService {
 
   constructor(
-    private readonly repository: BookmarkRepository,
+    @Inject(bookmarkRepository) private readonly repository: BookmarkRepository,
   ) {}
 
   public async findAll(): Promise<IBookmark[]> {
