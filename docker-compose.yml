@@ -16,7 +16,7 @@ services:
     depends_on:
       - postgres
     environment:
-      DATABASE_URL: postgres://user:password@postgres:5432/db
+      DATABASE_URL: typeorm://user:password@typeorm:5432/db
       NODE_ENV: development
       PORT: 4200
     ports:
