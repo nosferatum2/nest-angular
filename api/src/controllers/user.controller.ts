@@ -11,36 +11,36 @@ import {
   UsePipes,
   ValidationPipe
 } from '@nestjs/common';
-import { UsersUseCases } from '../use-cases/user/user.use-case';
-import { CreateUserDto, LoginUserDto, UpdateUserDto } from '../core';
+import { CreateUserDto, UpdateUserDto } from 'src/core';
+import { UserService } from 'src/core/services/user.service';
 
 @UseInterceptors(ClassSerializerInterceptor)
 @Controller('users')
 export class UserController {
   constructor(
-    private userUseCases: UsersUseCases
+    private userService: UserService
   ) {}
 
   @Get()
   async findAll() {
-    return this.userUseCases.getAllUsers();
+    return this.userService.findAll();
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string) {
-    return this.userUseCases.getUserById(id);
+    return this.userService.getById(id);
   }
 
   @Post()
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async create(@Body() createUserDto: CreateUserDto) {
-    return this.userUseCases.createUser(createUserDto);
+    return this.userService.create(createUserDto);
   }
 
-  @Post('login')
-  async login(@Body() loginUserDto: LoginUserDto) {
-    return this.userUseCases.login(loginUserDto);
-  }
+  // @Post('login')
+  // async login(@Body() loginUserDto: LoginUserDto) {
+  //   return this.userService.login(loginUserDto);
+  // }
 
   @Patch(':id')
   @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
@@ -48,11 +48,11 @@ export class UserController {
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto
   ) {
-    return this.userUseCases.updateUser(id, updateUserDto);
+    return this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id')
   async remove(@Param('id') id: string) {
-    return this.userUseCases.deleteUser(id);
+    return this.userService.delete(id);
   }
 }

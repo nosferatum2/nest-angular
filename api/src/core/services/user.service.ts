@@ -1,0 +1,68 @@
+import { Inject, Injectable } from '@nestjs/common';
+import { CreateUserDto, UpdateUserDto } from '../dto';
+import { IUser } from '../model';
+import { NotFoundException, UserAlreadyExistsException } from 'src/common';
+import { userRepository, UserRepository } from 'src/core/repository/user.repository';
+import * as bcrypt from 'bcrypt';
+
+const PASSWORD_SALT = 10;
+
+@Injectable()
+export class UserService {
+  constructor(
+    @Inject(userRepository) private readonly repository: UserRepository
+  ) { }
+
+  public async findAll(): Promise<IUser[]> {
+    return await this.repository.findAll()
+  }
+
+  public async getById(id: string): Promise<IUser> {
+    return await this.repository.get(id)
+  }
+
+  public async create(createUserDto: CreateUserDto): Promise<IUser> {
+    const exists: boolean = await this.emailExists(createUserDto.email.toLowerCase());
+    // TODO: fix exception handler
+    // if (exists) {
+    //   throw new UserAlreadyExistsException();
+    // }
+
+    return this.repository.save({
+      email: createUserDto.email.toLowerCase(),
+      firstName: createUserDto.firstName,
+      lastName: createUserDto.lastName,
+      password: await this.hashPassword(createUserDto.password)
+    } as unknown as IUser);
+  }
+
+  public async update(id: string, updateUserDto: UpdateUserDto): Promise<IUser> {
+    const user = await this.repository.get(id);
+
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    return await this.repository.save({
+      id: id,
+      firstName: updateUserDto.firstName,
+      lastName: updateUserDto.lastName
+    } as IUser)
+  }
+
+  public async delete(id: string): Promise<void | boolean> {
+    return this.repository.delete(id);
+  }
+
+  private async emailExists(email: string): Promise<boolean> {
+    return !!(await this.repository.findByCondition({ email: email.toLowerCase() }));
+  }
+
+  private async  hashPassword(password: string): Promise<string> {
+    return await bcrypt.hash(password, PASSWORD_SALT);
+  }
+
+  private async validatePassword(password: string, storedPasswordHash: string): Promise<boolean> {
+    return await bcrypt.compare(password, storedPasswordHash);
+  }
+}
