@@ -22,16 +22,17 @@ export class UserService {
   }
 
   public async create(createUserDto: CreateUserDto): Promise<IUser> {
-    const exists: boolean = await this.emailExists(createUserDto.email);
-    if (exists) {
-      throw new UserAlreadyExistsException();
-    }
+    const exists: boolean = await this.emailExists(createUserDto.email.toLowerCase());
+    // TODO: fix exception handler
+    // if (exists) {
+    //   throw new UserAlreadyExistsException();
+    // }
 
     return this.repository.save({
       email: createUserDto.email.toLowerCase(),
       firstName: createUserDto.firstName,
       lastName: createUserDto.lastName,
-      password: this.hashPassword(createUserDto.password)
+      password: await this.hashPassword(createUserDto.password)
     } as unknown as IUser);
   }
 
@@ -39,7 +40,7 @@ export class UserService {
     const user = await this.repository.get(id);
 
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new NotFoundException();
     }
 
     return await this.repository.save({
@@ -54,14 +55,14 @@ export class UserService {
   }
 
   private async emailExists(email: string): Promise<boolean> {
-    return !!(await this.repository.findByCondition({ email: email }));
+    return !!(await this.repository.findByCondition({ email: email.toLowerCase() }));
   }
 
-  private hashPassword(password: string): Promise<string> {
-    return bcrypt.hash(password, PASSWORD_SALT);
+  private async  hashPassword(password: string): Promise<string> {
+    return await bcrypt.hash(password, PASSWORD_SALT);
   }
 
-  private validatePassword(password: string, storedPasswordHash: string): Promise<boolean> {
-    return bcrypt.compare(password, storedPasswordHash);
+  private async validatePassword(password: string, storedPasswordHash: string): Promise<boolean> {
+    return await bcrypt.compare(password, storedPasswordHash);
   }
 }
