@@ -2,6 +2,7 @@ version: "3.8"
 
 services:
   api:
+    container_name: api
     build:
       dockerfile: Dockerfile
       context: ./api
@@ -14,16 +15,19 @@ services:
       - /src/app/node_modules
     command: npm run start:dev
     depends_on:
-      - postgres
+      - db
     environment:
-      DATABASE_URL: postgres://user:password@postgres:5432/db
       NODE_ENV: development
-      PORT: 4200
+      PORT: ${API_PORT:-4200}
+      DATABASE_URL: postgres://${DB_USER:-user}:${DB_PASS:-password}@${DB_HOST:-db}:${DB_PORT:-5432}/${DB_NAME:-database}
+    env_file:
+      - .env.compose
     ports:
       - "4200:4200"
       - "9229:9229"
 
   ui:
+    container_name: ui
     build:
       dockerfile: Dockerfile
       context: ./ui
@@ -37,22 +41,28 @@ services:
     links:
       - api
 
-  postgres:
+  db:
     image: postgres:13
+    container_name: db
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: db
+      POSTGRES_DB: ${DB_NAME:-database}
+      POSTGRES_USER: ${DB_USER:-user}
+      POSTGRES_PASSWORD: ${DB_PASS:-password}
+    env_file:
+      - .env.compose
     ports:
-      - "5432:5432"
+      - "5432:${DB_PORT:-5432}"
       - "5433:5433"
 
   postgres-admin:
     image: dpage/pgadmin4:8.2
+    container_name: db-pgadmin
     depends_on:
-      - postgres
+      - db
     environment:
-      PGADMIN_DEFAULT_EMAIL: 5wqFP@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_DEFAULT_EMAIL: ${DB_PGADMIN_EMAIL:-5wqFP@admin.com}
+      PGADMIN_DEFAULT_PASSWORD: ${DB_PGADMIN_PASS:-admin}
+    env_file:
+      - .env.compose
     ports:
       - "5050:80"

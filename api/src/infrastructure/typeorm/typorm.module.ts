@@ -35,4 +35,10 @@ import { bookmarkRepository } from 'src/core/repository/bookmark.repository';
     userRepository
   ]
 })
-export class TypeormModule {}
+export class TypeormModule {
+  constructor() {
+    console.log(' ================================ connecting to database... ===============================');
+    console.log(process.env.DATABASE_URL);
+  }
+
+}

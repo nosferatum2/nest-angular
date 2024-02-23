@@ -3,7 +3,6 @@ import { IsOptional, IsString } from 'class-validator';
 export class CreateBookmarkDto {
 
   @IsString()
-  @IsOptional()
   title: string;
 
   @IsString()

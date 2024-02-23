@@ -1,4 +1,4 @@
-import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
+import { Column, Entity, ManyToMany } from 'typeorm';
 import { Exclude } from 'class-transformer';
 import { BaseEntity } from '../base.entity';
 import { BookmarkEntity } from './bookmark.entity';
@@ -35,6 +35,5 @@ export class UserEntity extends BaseEntity<UserEntity> implements IUser {
   // roles: UserRole[]
 
   @ManyToMany(() => BookmarkEntity, bookmark => bookmark.users)
-  @JoinTable()
   bookmarks: BookmarkEntity[];
 }
