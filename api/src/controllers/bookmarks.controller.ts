@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post } from '@nestjs/common';
 import { CreateBookmarkDto, UpdateBookmarkDto } from 'src/core';
 import { BookmarkService } from 'src/core/services/bookmark.service';
 
@@ -14,8 +14,8 @@ export class BookmarksController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string) {
-    return this.bookmarkService.get(id)
+  async findOne(@Param('id', ParseUUIDPipe) id: string) {
+    return this.bookmarkService.getById(id)
   }
 
   @Post()
@@ -27,7 +27,7 @@ export class BookmarksController {
 
   @Patch(':id')
   async update(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() updateBookmarkDto: UpdateBookmarkDto
   ) {
     return this.bookmarkService.update(id, updateBookmarkDto);

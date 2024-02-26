@@ -7,5 +7,5 @@ export interface IBaseRepository<Entity> {
 
   save(item: Entity): Promise<Entity>;
 
-  delete(id: string): Promise<void | boolean>;
+  delete(id: string): Promise<any>;
 }

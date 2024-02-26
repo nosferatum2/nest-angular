@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { BookmarkEntity } from '../entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { BookmarkRepository } from 'src/core/repository/bookmark.repository';
@@ -22,7 +22,7 @@ export class TypeormBookmarkRepository implements BookmarkRepository {
   }
 
   public async findByCondition(filterCondition: any): Promise<IBookmark[]> {
-    return await this.repository.findBy(filterCondition);
+    return await this.repository.find(filterCondition);
   }
 
   public async get(id: string): Promise<IBookmark> {
@@ -33,7 +33,7 @@ export class TypeormBookmarkRepository implements BookmarkRepository {
     return await this.repository.save(item)
   }
 
-  public async delete(id: string): Promise<void> {
-    return await this.repository.delete(id).then()
+  public async delete(id: string): Promise<DeleteResult> {
+    return await this.repository.delete(id)
   }
 }
