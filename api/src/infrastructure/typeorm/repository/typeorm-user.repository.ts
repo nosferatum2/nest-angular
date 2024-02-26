@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { DeleteResult, Repository } from 'typeorm';
 import { UserEntity } from '../entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserRepository } from 'src/core/repository/user.repository';
@@ -33,7 +33,7 @@ export class TypeormUserRepository implements UserRepository {
     return await this.repository.save(item)
   }
 
-  public async delete(id: string): Promise<void> {
-    await this.repository.delete(id)
+  public async delete(id: string): Promise<DeleteResult> {
+    return await this.repository.delete(id)
   }
 }

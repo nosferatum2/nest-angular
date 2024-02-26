@@ -1,68 +1,75 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto } from '../dto';
 import { IUser } from '../model';
-import { NotFoundException, UserAlreadyExistsException } from 'src/common';
+import { UserAlreadyExistsException, UserNotFoundException } from 'src/common';
 import { userRepository, UserRepository } from 'src/core/repository/user.repository';
-import * as bcrypt from 'bcrypt';
-
-const PASSWORD_SALT = 10;
+import { hashPassword } from '../../common/utils/bcrypt';
 
 @Injectable()
 export class UserService {
   constructor(
-    @Inject(userRepository) private readonly repository: UserRepository
+    @Inject(userRepository) private readonly repository: UserRepository,
   ) { }
 
   public async findAll(): Promise<IUser[]> {
-    return await this.repository.findAll()
+    return await this.repository.findAll();
   }
 
   public async getById(id: string): Promise<IUser> {
-    return await this.repository.get(id)
+    const user = await this.repository.get(id);
+
+    if (!user) {
+      throw new UserNotFoundException();
+    }
+
+    return user;
   }
 
   public async create(createUserDto: CreateUserDto): Promise<IUser> {
-    const exists: boolean = await this.emailExists(createUserDto.email.toLowerCase());
-    // TODO: fix exception handler
-    // if (exists) {
-    //   throw new UserAlreadyExistsException();
-    // }
+    const exists: boolean = await this.emailExists(createUserDto.email);
+
+    if (exists) {
+      throw new UserAlreadyExistsException();
+    }
 
     return this.repository.save({
       email: createUserDto.email.toLowerCase(),
       firstName: createUserDto.firstName,
       lastName: createUserDto.lastName,
-      password: await this.hashPassword(createUserDto.password)
-    } as unknown as IUser);
+      password: await hashPassword(createUserDto.password)
+    });
   }
 
   public async update(id: string, updateUserDto: UpdateUserDto): Promise<IUser> {
     const user = await this.repository.get(id);
 
     if (!user) {
-      throw new NotFoundException();
+      throw new UserNotFoundException();
     }
 
     return await this.repository.save({
       id: id,
       firstName: updateUserDto.firstName,
       lastName: updateUserDto.lastName
-    } as IUser)
+    });
   }
 
   public async delete(id: string): Promise<void | boolean> {
-    return this.repository.delete(id);
+    const deleteResult = await this.repository.delete(id);
+
+    if (!deleteResult.affected) {
+      throw new UserNotFoundException();
+    }
+
+    return true;
   }
 
   private async emailExists(email: string): Promise<boolean> {
-    return !!(await this.repository.findByCondition({ email: email.toLowerCase() }));
+    const user = await this.repository.findByCondition({
+      where: { email: email.toLowerCase() }
+    });
+
+    return !!user.length;
   }
 
-  private async  hashPassword(password: string): Promise<string> {
-    return await bcrypt.hash(password, PASSWORD_SALT);
-  }
-
-  private async validatePassword(password: string, storedPasswordHash: string): Promise<boolean> {
-    return await bcrypt.compare(password, storedPasswordHash);
-  }
 }
