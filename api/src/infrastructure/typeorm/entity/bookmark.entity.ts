@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, ManyToMany } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany } from 'typeorm';
 import { BaseEntity } from '../base.entity';
 import { UserEntity } from './user.entity';
 import { IBookmark } from 'src/core';
@@ -16,7 +16,7 @@ export class BookmarkEntity extends BaseEntity<BookmarkEntity> implements IBookm
   link: string;
 
   @ManyToMany(() => UserEntity, user => user.bookmarks)
-  @JoinColumn()
+  @JoinTable()
   users: UserEntity[];
 
 }
